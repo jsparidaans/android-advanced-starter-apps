@@ -5,7 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -64,6 +66,7 @@ public class SimpleFragment extends Fragment {
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_simple, container, false);
         final RadioGroup radioGroup = rootView.findViewById(R.id.radio_group);
+        final RatingBar ratingBar = rootView.findViewById(R.id.rating_bar);
 
         radioGroup.setOnCheckedChangeListener((group, checkId) -> {
             View radioButton = radioGroup.findViewById(checkId);
@@ -80,6 +83,8 @@ public class SimpleFragment extends Fragment {
                     break;
             }
         });
+
+        ratingBar.setOnRatingBarChangeListener((ratingBar1, rating, fromUser) -> Toast.makeText(getContext(), "My rating: "+rating, Toast.LENGTH_SHORT).show());
 
         return rootView;
     }
