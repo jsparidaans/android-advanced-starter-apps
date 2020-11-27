@@ -42,16 +42,21 @@ public class MainActivity extends AppCompatActivity {
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
+    private boolean mTwoPane = false;
 
     /**
      * Sets up a song list as a RecyclerView.
      *
-     * @param savedInstanceState
+     * @param savedInstanceState settings
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_list);
+
+        if (findViewById(R.id.song_detail_container) != null) {
+            mTwoPane = true;
+        }
 
         // Set the toolbar as the app bar.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -79,9 +84,10 @@ public class MainActivity extends AppCompatActivity {
 
         /**
          * This method inflates the layout for the song list.
-         * @param parent ViewGroup into which the new view will be added.
+         *
+         * @param parent   ViewGroup into which the new view will be added.
          * @param viewType The view type of the new View.
-         * @return
+         * @return viewholder
          */
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -108,19 +114,29 @@ public class MainActivity extends AppCompatActivity {
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Context context = v.getContext();
-                    Intent intent = new Intent(context,
-                            SongDetailActivity.class);
-                    intent.putExtra(SongUtils.SONG_ID_KEY,
-                            holder.getAdapterPosition());
-                    context.startActivity(intent);
+                    if (mTwoPane) {
+                        int selectedSong = holder.getAdapterPosition();
+                        SongDetailFragment fragment = SongDetailFragment.newInstance(selectedSong);
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.song_detail_container, fragment)
+                                .addToBackStack(null)
+                                .commit();
+                    } else {
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context,
+                                SongDetailActivity.class);
+                        intent.putExtra(SongUtils.SONG_ID_KEY,
+                                holder.getAdapterPosition());
+                        context.startActivity(intent);
+                    }
                 }
             });
         }
 
         /**
          * Get the count of song list items.
-         * @return
+         *
+         * @return size of mValues
          */
         @Override
         public int getItemCount() {
