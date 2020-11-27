@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
+    private boolean mTwoPane = false;
 
     /**
      * Sets up a song list as a RecyclerView.
@@ -52,6 +53,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_list);
+
+        if (findViewById(R.id.song_detail_container) != null) {
+            mTwoPane = true;
+        }
 
         // Set the toolbar as the app bar.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -79,7 +84,8 @@ public class MainActivity extends AppCompatActivity {
 
         /**
          * This method inflates the layout for the song list.
-         * @param parent ViewGroup into which the new view will be added.
+         *
+         * @param parent   ViewGroup into which the new view will be added.
          * @param viewType The view type of the new View.
          * @return
          */
@@ -120,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
         /**
          * Get the count of song list items.
+         *
          * @return
          */
         @Override
