@@ -19,15 +19,20 @@ package com.example.android.fragmentexample;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-public class MainActivity extends AppCompatActivity {
-    private Button mButton, nextButton;
+public class MainActivity extends AppCompatActivity implements SimpleFragment.OnFragmentInteractionListener {
+    private Button mButton;
     private boolean isFragmentDisplayed = false;
+    private int mRadioButtonChoice = 2;
+
+    //Bundle keys
     static final String STATE_FRAGMENT = "state_of_fragment";
+    static final String STATE_CHOICE = "user_choice";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             isFragmentDisplayed = savedInstanceState.getBoolean(STATE_FRAGMENT);
+            mRadioButtonChoice = savedInstanceState.getInt(STATE_CHOICE);
             if (isFragmentDisplayed) {
                 mButton.setText(R.string.close);
             }
@@ -61,11 +67,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean(STATE_FRAGMENT, isFragmentDisplayed);
+        savedInstanceState.putInt(STATE_CHOICE,mRadioButtonChoice);
         super.onSaveInstanceState(savedInstanceState);
     }
 
     public void displayFragment() {
-        SimpleFragment simpleFragment = SimpleFragment.newInstance("", "");
+        SimpleFragment simpleFragment = SimpleFragment.newInstance(mRadioButtonChoice);
         //Get the fragment manager to start a transaction
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -91,5 +98,11 @@ public class MainActivity extends AppCompatActivity {
         }
         mButton.setText(R.string.open);
         isFragmentDisplayed = false;
+    }
+
+    @Override
+    public void onRadioButtonChoice(int choice) {
+        mRadioButtonChoice = choice;
+        Toast.makeText(this, "Choice is " + choice, Toast.LENGTH_SHORT).show();
     }
 }
