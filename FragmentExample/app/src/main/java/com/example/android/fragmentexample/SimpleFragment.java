@@ -1,5 +1,6 @@
 package com.example.android.fragmentexample;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 /**
@@ -24,10 +26,18 @@ public class SimpleFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private static final int YES = 0;
     private static final int NO = 1;
+    private static final int NONE = 2;
+
+    public int mRadioButtonChoice = NONE;
+    OnFragmentInteractionListener mListener;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    public interface OnFragmentInteractionListener {
+        void onRadioButtonChoice(int choice);
+    }
 
     public SimpleFragment() {
         // Required empty public constructor
@@ -61,6 +71,16 @@ public class SimpleFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + getResources().getString(R.string.exception_message));
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -75,16 +95,22 @@ public class SimpleFragment extends Fragment {
             switch (index) {
                 case YES:
                     textView.setText(R.string.yes_message);
+                    mRadioButtonChoice = YES;
+                    mListener.onRadioButtonChoice(YES);
                     break;
                 case NO:
                     textView.setText(R.string.no_message);
+                    mRadioButtonChoice = NO;
+                    mListener.onRadioButtonChoice(NO);
                     break;
                 default:
+                    mRadioButtonChoice = NONE;
+                    mListener.onRadioButtonChoice(NONE);
                     break;
             }
         });
 
-        ratingBar.setOnRatingBarChangeListener((ratingBar1, rating, fromUser) -> Toast.makeText(getContext(), "My rating: "+rating, Toast.LENGTH_SHORT).show());
+        ratingBar.setOnRatingBarChangeListener((ratingBar1, rating, fromUser) -> Toast.makeText(getContext(), "My rating: " + rating, Toast.LENGTH_SHORT).show());
 
         return rootView;
     }
