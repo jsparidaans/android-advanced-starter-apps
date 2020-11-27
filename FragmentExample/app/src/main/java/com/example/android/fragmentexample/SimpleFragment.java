@@ -20,20 +20,16 @@ import androidx.fragment.app.Fragment;
  */
 public class SimpleFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    //Constants
     private static final int YES = 0;
     private static final int NO = 1;
     private static final int NONE = 2;
 
+    //Bundle keys
+    private static final String CHOICE = "choice";
+
     public int mRadioButtonChoice = NONE;
     OnFragmentInteractionListener mListener;
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public interface OnFragmentInteractionListener {
         void onRadioButtonChoice(int choice);
@@ -47,27 +43,21 @@ public class SimpleFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param choice radio button choice
      * @return A new instance of fragment SimpleFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SimpleFragment newInstance(String param1, String param2) {
+    public static SimpleFragment newInstance(int choice) {
         SimpleFragment fragment = new SimpleFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+        Bundle arguments = new Bundle();
+        arguments.putInt(CHOICE, choice);
+        fragment.setArguments(arguments);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -87,6 +77,14 @@ public class SimpleFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_simple, container, false);
         final RadioGroup radioGroup = rootView.findViewById(R.id.radio_group);
         final RatingBar ratingBar = rootView.findViewById(R.id.rating_bar);
+
+        if (getArguments().containsKey(CHOICE)) {
+            //Get choice
+            mRadioButtonChoice = getArguments().getInt(CHOICE);
+            if (mRadioButtonChoice != NONE) {
+                radioGroup.check(radioGroup.getChildAt(mRadioButtonChoice).getId());
+            }
+        }
 
         radioGroup.setOnCheckedChangeListener((group, checkId) -> {
             View radioButton = radioGroup.findViewById(checkId);

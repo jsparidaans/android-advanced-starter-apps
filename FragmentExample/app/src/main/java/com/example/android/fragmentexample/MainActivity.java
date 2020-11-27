@@ -29,7 +29,9 @@ public class MainActivity extends AppCompatActivity implements SimpleFragment.On
     private boolean isFragmentDisplayed = false;
     private int mRadioButtonChoice = 2;
 
+    //Bundle keys
     static final String STATE_FRAGMENT = "state_of_fragment";
+    static final String STATE_CHOICE = "user_choice";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements SimpleFragment.On
 
         if (savedInstanceState != null) {
             isFragmentDisplayed = savedInstanceState.getBoolean(STATE_FRAGMENT);
+            mRadioButtonChoice = savedInstanceState.getInt(STATE_CHOICE);
             if (isFragmentDisplayed) {
                 mButton.setText(R.string.close);
             }
@@ -56,11 +59,12 @@ public class MainActivity extends AppCompatActivity implements SimpleFragment.On
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean(STATE_FRAGMENT, isFragmentDisplayed);
+        savedInstanceState.putInt(STATE_CHOICE,mRadioButtonChoice);
         super.onSaveInstanceState(savedInstanceState);
     }
 
     public void displayFragment() {
-        SimpleFragment simpleFragment = SimpleFragment.newInstance("", "");
+        SimpleFragment simpleFragment = SimpleFragment.newInstance(mRadioButtonChoice);
         //Get the fragment manager to start a transaction
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
