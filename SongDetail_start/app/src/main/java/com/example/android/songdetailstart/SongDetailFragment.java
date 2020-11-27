@@ -34,36 +34,32 @@ public class SongDetailFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param selectedSong the selected Song
      * @return A new instance of fragment SongDetailFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SongDetailFragment newInstance(String param1, String param2) {
+    public static SongDetailFragment newInstance(int selectedSong) {
         SongDetailFragment fragment = new SongDetailFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+        Bundle arguments = new Bundle();
+        arguments.putInt(SongUtils.SONG_ID_KEY, selectedSong);
+        fragment.setArguments(arguments);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        mSong = SongUtils.SONG_ITEMS.get(getActivity().getIntent().getIntExtra(SongUtils.SONG_ID_KEY, 0));
+        if (getArguments().containsKey(SongUtils.SONG_ID_KEY)) {
 
+            mSong = SongUtils.SONG_ITEMS.get(getArguments().getInt(SongUtils.SONG_ID_KEY));
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_song_detail, container, false);
+        View rootView = inflater.inflate(R.layout.song_detail, container, false);
         if (mSong != null) {
             ((TextView) rootView.findViewById(R.id.song_detail)).setText(mSong.details);
         }

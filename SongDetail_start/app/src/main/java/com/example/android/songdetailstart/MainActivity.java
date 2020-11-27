@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Sets up a song list as a RecyclerView.
      *
-     * @param savedInstanceState
+     * @param savedInstanceState settings
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
          *
          * @param parent   ViewGroup into which the new view will be added.
          * @param viewType The view type of the new View.
-         * @return
+         * @return viewholder
          */
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -114,12 +114,21 @@ public class MainActivity extends AppCompatActivity {
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Context context = v.getContext();
-                    Intent intent = new Intent(context,
-                            SongDetailActivity.class);
-                    intent.putExtra(SongUtils.SONG_ID_KEY,
-                            holder.getAdapterPosition());
-                    context.startActivity(intent);
+                    if (mTwoPane) {
+                        int selectedSong = holder.getAdapterPosition();
+                        SongDetailFragment fragment = SongDetailFragment.newInstance(selectedSong);
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.song_detail_container, fragment)
+                                .addToBackStack(null)
+                                .commit();
+                    } else {
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context,
+                                SongDetailActivity.class);
+                        intent.putExtra(SongUtils.SONG_ID_KEY,
+                                holder.getAdapterPosition());
+                        context.startActivity(intent);
+                    }
                 }
             });
         }
@@ -127,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         /**
          * Get the count of song list items.
          *
-         * @return
+         * @return size of mValues
          */
         @Override
         public int getItemCount() {
