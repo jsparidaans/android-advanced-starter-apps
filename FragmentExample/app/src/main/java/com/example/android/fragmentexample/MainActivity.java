@@ -16,14 +16,73 @@
 
 package com.example.android.fragmentexample;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity {
+    private Button mButton;
+    private boolean isFragmentDisplayed = false;
+    static final String STATE_FRAGMENT = "state_of_fragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mButton = findViewById(R.id.open_button);
+        mButton.setOnClickListener(v -> {
+            if (!isFragmentDisplayed) {
+                displayFragment();
+            } else {
+                closeFragment();
+            }
+        });
+
+        if (savedInstanceState != null) {
+            isFragmentDisplayed = savedInstanceState.getBoolean(STATE_FRAGMENT);
+            if (isFragmentDisplayed) {
+                mButton.setText(R.string.close);
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putBoolean(STATE_FRAGMENT, isFragmentDisplayed);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    public void displayFragment() {
+        SimpleFragment simpleFragment = SimpleFragment.newInstance("", "");
+        //Get the fragment manager to start a transaction
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        //Add the fragment
+        fragmentTransaction.add(R.id.fragment_container, simpleFragment).addToBackStack(null).commit();
+
+        //Update button text
+        mButton.setText(R.string.close);
+
+        //set boolean open indicator
+        isFragmentDisplayed = true;
+
+
+    }
+
+    public void closeFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        SimpleFragment simpleFragment = (SimpleFragment) fragmentManager.findFragmentById(R.id.fragment_container);
+        if (simpleFragment != null) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.remove(simpleFragment).commit();
+        }
+        mButton.setText(R.string.open);
+        isFragmentDisplayed = false;
     }
 }
