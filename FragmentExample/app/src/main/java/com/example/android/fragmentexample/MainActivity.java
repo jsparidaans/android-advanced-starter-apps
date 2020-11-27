@@ -26,7 +26,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity implements SimpleFragment.OnFragmentInteractionListener {
-    private Button mButton;
+    private Button mButton, nextButton;
     private boolean isFragmentDisplayed = false;
     private int mRadioButtonChoice = 2;
 
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements SimpleFragment.On
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean(STATE_FRAGMENT, isFragmentDisplayed);
-        savedInstanceState.putInt(STATE_CHOICE,mRadioButtonChoice);
+        savedInstanceState.putInt(STATE_CHOICE, mRadioButtonChoice);
         super.onSaveInstanceState(savedInstanceState);
     }
 

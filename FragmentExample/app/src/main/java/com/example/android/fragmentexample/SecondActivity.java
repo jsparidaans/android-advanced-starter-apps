@@ -11,6 +11,8 @@ public class SecondActivity extends AppCompatActivity {
     private Button previousButton, mButton;
     private boolean isFragmentDisplayed = false;
 
+    private int mRadioButtonChoice = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +31,7 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     public void displayFragment() {
-        SimpleFragment simpleFragment = SimpleFragment.newInstance("", "");
+        SimpleFragment simpleFragment = SimpleFragment.newInstance(mRadioButtonChoice);
         //Get the fragment manager to start a transaction
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
