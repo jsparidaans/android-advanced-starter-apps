@@ -39,5 +39,8 @@
     <!-- Text for the exception message in FragmentCommunicate. -->
     <string name="exception_message">must implement OnFragmentInteractionListener</string>
     <string name="like_the_song">LIKE THE SONG?</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="image_view_description">views an image</string>
 
 </resources>
