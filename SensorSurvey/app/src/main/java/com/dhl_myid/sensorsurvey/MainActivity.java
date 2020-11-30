@@ -46,6 +46,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent event) {
 
+        //Detect changes and apply them
+        int sensorType = event.sensor.getType();
+        float currentValue = event.values[0];
+
+        switch (sensorType) {
+            case Sensor.TYPE_LIGHT:
+                mTextSensorLight.setText(getResources().getString(R.string.label_light, currentValue));
+                break;
+            case Sensor.TYPE_PROXIMITY:
+                mTextSensorProximity.setText(getResources().getString(R.string.label_proximity, currentValue));
+                break;
+            default:
+                break;
+        }
+
     }
 
     @Override
