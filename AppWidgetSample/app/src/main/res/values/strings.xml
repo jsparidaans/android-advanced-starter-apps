@@ -3,4 +3,5 @@
     <string name="functionality">All the functionality for this app is in the app widget.</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="widget_id">Widget ID</string>
 </resources>
