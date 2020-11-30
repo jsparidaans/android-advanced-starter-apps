@@ -3,19 +3,36 @@ package com.dhl_myid.appwidgetsample;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.widget.RemoteViews;
+
+import java.text.DateFormat;
+import java.util.Date;
 
 /**
  * Implementation of App Widget functionality.
  */
 public class NewAppWidget extends AppWidgetProvider {
+    private static final String mSharedPrefFile = "com.dhl_myid.appwidgetsample";
+    private static final String COUNT_KEY = "count";
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
+        SharedPreferences sharedPreferences = context.getSharedPreferences(mSharedPrefFile, 0);
+        int count = sharedPreferences.getInt(COUNT_KEY + appWidgetId, 0);
+        count++;
+
+        String dateString = DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date());
+
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.new_app_widget);
         views.setTextViewText(R.id.appwidget_id, String.valueOf(appWidgetId));
+        views.setTextViewText(R.id.appwidget_update, context.getResources().getString(R.string.date_count_format, count, dateString));
+
+        SharedPreferences.Editor prefEditor = sharedPreferences.edit();
+        prefEditor.putInt(COUNT_KEY + appWidgetId, count);
+        prefEditor.apply();
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
