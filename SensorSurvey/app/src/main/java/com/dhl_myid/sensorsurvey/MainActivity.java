@@ -8,11 +8,17 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity {
 
     private SensorManager sensorManager;
+
+    //Sensors
+    private Sensor mSensorProximity;
+    private Sensor mSensorLight;
+
+    //TextViews
+    private TextView mTextSensorProximity;
+    private TextView mTextSensorLight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,18 +28,23 @@ public class MainActivity extends AppCompatActivity {
         //Retrieve sensor manager from system service
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
-        //Retrieve list of all sensors
-        List<Sensor> sensorList = sensorManager.getSensorList(Sensor.TYPE_ALL);
+        //Get views
+        mTextSensorLight = findViewById(R.id.label_light);
+        mTextSensorProximity = findViewById(R.id.label_proximity);
 
-        //Get sensor names from list
-        StringBuilder sensorText = new StringBuilder();
-        for (Sensor currentSensor : sensorList) {
-            sensorText.append(currentSensor.getName()).append(System.getProperty("line.separator"));
+        //Get sensors
+        mSensorProximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        mSensorLight = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+
+        //Set error string if no sensor available
+        String sensor_error = getResources().getString(R.string.error_no_sensor);
+        if (mSensorLight == null) {
+            mTextSensorLight.setText(sensor_error);
+        }
+        if (mSensorProximity == null) {
+            mTextSensorProximity.setText(sensor_error);
         }
 
-        //Set sensor names in text view
-        TextView sensorTextView = findViewById(R.id.sensor_list);
-        sensorTextView.setText(sensorText);
 
     }
 }
