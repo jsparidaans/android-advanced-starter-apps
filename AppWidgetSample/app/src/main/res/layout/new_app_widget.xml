@@ -67,5 +67,5 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/section_update"
         android:layout_centerHorizontal="true"
-        android:text="Update now" />
+        android:text="@string/update" />
 </RelativeLayout>
