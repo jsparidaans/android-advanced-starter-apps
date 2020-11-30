@@ -17,10 +17,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //Sensors
     private Sensor mSensorProximity;
     private Sensor mSensorLight;
+    private Sensor mSensorHumidity;
 
     //TextViews
     private TextView mTextSensorProximity;
     private TextView mTextSensorLight;
+    private TextView mTextSensorHumidity;
 
     @Override
     protected void onStart() {
@@ -32,6 +34,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         if (mSensorLight != null) {
             sensorManager.registerListener(this, mSensorLight, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+        if (mSensorHumidity != null) {
+            sensorManager.registerListener(this, mSensorHumidity, SensorManager.SENSOR_DELAY_NORMAL);
         }
     }
 
@@ -57,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             case Sensor.TYPE_PROXIMITY:
                 mTextSensorProximity.setText(getResources().getString(R.string.label_proximity, currentValue));
                 break;
+            case Sensor.TYPE_RELATIVE_HUMIDITY:
+                mTextSensorHumidity.setText(getResources().getString(R.string.label_humidity, currentValue));
             default:
                 break;
         }
@@ -79,10 +86,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //Get views
         mTextSensorLight = findViewById(R.id.label_light);
         mTextSensorProximity = findViewById(R.id.label_proximity);
+        mTextSensorHumidity = findViewById(R.id.label_humidity);
 
         //Get sensors
         mSensorProximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         mSensorLight = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        mSensorHumidity = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
 
         //Set error string if no sensor available
         String sensor_error = getResources().getString(R.string.error_no_sensor);
@@ -91,6 +100,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         if (mSensorProximity == null) {
             mTextSensorProximity.setText(sensor_error);
+        }
+        if (mSensorHumidity == null) {
+            mTextSensorHumidity.setText(sensor_error);
         }
 
 
