@@ -2,13 +2,15 @@ package com.dhl_myid.sensorsurvey;
 
 import android.content.Context;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     private SensorManager sensorManager;
 
@@ -19,6 +21,37 @@ public class MainActivity extends AppCompatActivity {
     //TextViews
     private TextView mTextSensorProximity;
     private TextView mTextSensorLight;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        //Register listeners
+        if (mSensorProximity != null) {
+            sensorManager.registerListener(this, mSensorProximity, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+        if (mSensorLight != null) {
+            sensorManager.registerListener(this, mSensorLight, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        //Unregister listeners
+        sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
