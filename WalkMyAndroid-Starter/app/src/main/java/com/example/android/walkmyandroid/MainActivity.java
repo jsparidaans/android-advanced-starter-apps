@@ -19,7 +19,6 @@ import android.Manifest;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -39,16 +38,31 @@ import com.google.android.gms.location.LocationServices;
 public class MainActivity extends AppCompatActivity implements FetchAddressTask.OnTaskCompleted {
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
-    private static final String TAG = "MainActivity";
+    private static final String TRACKING_LOCATION_KEY = "isTrackingLocation";
 
-    private Location lastLocation;
     private TextView locationTextView;
     private FusedLocationProviderClient fusedLocationClient;
-    private ImageView androidImageView;
     private AnimatorSet rotateAnim;
     private boolean isTrackingLocation;
     private Button locationButton;
     private LocationCallback locationCallback;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isTrackingLocation) {
+            startTrackingLocation();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isTrackingLocation) {
+            stopTrackingLocation();
+            isTrackingLocation = true;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements FetchAddressTask.
         // Get UI variables
         locationButton = findViewById(R.id.button_location);
         locationTextView = findViewById(R.id.textview_location);
-        androidImageView = findViewById(R.id.imageview_android);
+        ImageView androidImageView = findViewById(R.id.imageview_android);
         rotateAnim = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.rotate);
 
         rotateAnim.setTarget(androidImageView);
@@ -69,45 +83,56 @@ public class MainActivity extends AppCompatActivity implements FetchAddressTask.
         // Set listeners
         locationButton.setOnClickListener(v -> {
             if (!isTrackingLocation) {
-                stopTrackingLocation();
-            } else {
                 startTrackingLocation();
+            } else {
+                stopTrackingLocation();
             }
         });
 
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
-
+                if (isTrackingLocation) {
+                    new FetchAddressTask(MainActivity.this, MainActivity.this).execute(locationResult.getLastLocation());
+                }
             }
         };
+
+        // Check instance state
+        if (savedInstanceState != null) {
+            isTrackingLocation = savedInstanceState.getBoolean(TRACKING_LOCATION_KEY);
+        }
     }
 
     @Override
     public void onTaskCompleted(String result) {
-        locationTextView.setText(getString(R.string.address_text, result, System.currentTimeMillis()));
+        if (isTrackingLocation) {
+            locationTextView.setText(getString(R.string.address_text, result, System.currentTimeMillis()));
+        }
     }
 
     private void startTrackingLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         } else {
-            fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-                if (location != null) {
-                    new FetchAddressTask(this, this).execute(location);
-                } else {
-                    locationTextView.setText(R.string.no_location);
-                }
-            });
+            locationButton.setText(getString(R.string.stop_tracking));
+            fusedLocationClient.requestLocationUpdates(getLocationRequest(), locationCallback, null);
         }
         rotateAnim.start();
         isTrackingLocation = true;
         locationTextView.setText(getString(R.string.address_text, getString(R.string.loading), System.currentTimeMillis()));
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putBoolean(TRACKING_LOCATION_KEY, isTrackingLocation);
+        super.onSaveInstanceState(outState);
+    }
+
     private void stopTrackingLocation() {
         if (isTrackingLocation) {
 
+            fusedLocationClient.removeLocationUpdates(locationCallback);
             isTrackingLocation = false;
             locationButton.setText(R.string.start_tracking);
             locationTextView.setText(R.string.textview_hint);
