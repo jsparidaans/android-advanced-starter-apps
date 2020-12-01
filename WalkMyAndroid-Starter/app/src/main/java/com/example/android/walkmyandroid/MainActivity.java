@@ -16,10 +16,13 @@
 package com.example.android.walkmyandroid;
 
 import android.Manifest;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +41,10 @@ public class MainActivity extends AppCompatActivity implements FetchAddressTask.
     private Location lastLocation;
     private TextView locationTextView;
     private FusedLocationProviderClient fusedLocationClient;
+    private ImageView androidImageView;
+    private AnimatorSet rotateAnim;
+    private boolean isTrackingLocation;
+    private Button locationButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +55,21 @@ public class MainActivity extends AppCompatActivity implements FetchAddressTask.
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Get UI variables
-        Button locationButton = findViewById(R.id.button_location);
+        locationButton = findViewById(R.id.button_location);
         locationTextView = findViewById(R.id.textview_location);
+        androidImageView = findViewById(R.id.imageview_android);
+        rotateAnim = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.rotate);
+
+        rotateAnim.setTarget(androidImageView);
 
         // Set listeners
-        locationButton.setOnClickListener(v -> getLocation());
+        locationButton.setOnClickListener(v -> {
+            if (!isTrackingLocation) {
+                stopTrackingLocation();
+            } else {
+                startTrackingLocation();
+            }
+        });
     }
 
     @Override
@@ -60,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements FetchAddressTask.
         locationTextView.setText(getString(R.string.address_text, result, System.currentTimeMillis()));
     }
 
-    private void getLocation() {
+    private void startTrackingLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         } else {
@@ -72,7 +89,19 @@ public class MainActivity extends AppCompatActivity implements FetchAddressTask.
                 }
             });
         }
+        rotateAnim.start();
+        isTrackingLocation = true;
         locationTextView.setText(getString(R.string.address_text, getString(R.string.loading), System.currentTimeMillis()));
+    }
+
+    private void stopTrackingLocation() {
+        if (isTrackingLocation) {
+
+            isTrackingLocation = false;
+            locationButton.setText(R.string.start_tracking);
+            locationTextView.setText(R.string.textview_hint);
+            rotateAnim.end();
+        }
     }
 
     @Override
@@ -80,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements FetchAddressTask.
         switch (requestCode) {
             case REQUEST_LOCATION_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getLocation();
+                    startTrackingLocation();
                 } else {
                     Toast.makeText(this, R.string.location_permission_denied, Toast.LENGTH_SHORT).show();
                 }
