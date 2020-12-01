@@ -16,9 +16,15 @@
 package com.example.android.walkmyandroid;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +35,12 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -86,4 +98,63 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
+    private static class FetchAddressTask extends AsyncTask<Location, Void, String> {
+
+        private static final String TAG = "FetchAddressTask";
+        private final WeakReference<Context> context;
+
+        public FetchAddressTask(Context context) {
+            this.context = new WeakReference<>(context);
+        }
+
+        @Override
+        protected String doInBackground(Location... locations) {
+            Geocoder geocoder = new Geocoder(context.get(), Locale.getDefault());
+            Location location = locations[0];
+            List<Address> addressList;
+            String result;
+
+            try {
+                addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                if (addressList == null || addressList.size() == 0) {
+                    result = context.get().getString(R.string.no_address_found);
+                } else {
+                    Address address = addressList.get(0);
+                    List<String> addressParts = new ArrayList<>();
+
+                    for (Address addressPart : addressList) {
+                        addressParts.add(addressPart.toString());
+                    }
+                    result = TextUtils.join("\n", addressParts);
+                }
+            } catch (IOException ioException) {
+                result = context.get().getString(R.string.service_not_available);
+                Log.e(TAG, "doInBackground: " + result + ": ", ioException);
+            } catch (IllegalArgumentException illegalArgumentException) {
+                result = context.get().getString(R.string.invalid_lat_long_used);
+                Log.e(TAG, "doInBackground: " + result +
+                        ": \nLatitude = " + location.getLatitude() +
+                        "\nLongitude = " + location.getLongitude(), illegalArgumentException);
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String address) {
+            super.onPostExecute(address);
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+    }
+
 }
