@@ -16,15 +16,9 @@
 package com.example.android.walkmyandroid;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,13 +30,7 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FetchAddressTask.OnTaskCompleted {
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private static final String TAG = "MainActivity";
@@ -67,23 +55,24 @@ public class MainActivity extends AppCompatActivity {
         locationButton.setOnClickListener(v -> getLocation());
     }
 
+    @Override
+    public void onTaskCompleted(String result) {
+        locationTextView.setText(getString(R.string.address_text, result, System.currentTimeMillis()));
+    }
+
     private void getLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         } else {
             fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
                 if (location != null) {
-                    lastLocation = location;
-                    locationTextView.setText(
-                            getString(R.string.location_text,
-                                    lastLocation.getLatitude(),
-                                    lastLocation.getLongitude(),
-                                    lastLocation.getTime()));
+                    new FetchAddressTask(this, this).execute(location);
                 } else {
                     locationTextView.setText(R.string.no_location);
                 }
             });
         }
+        locationTextView.setText(getString(R.string.address_text, getString(R.string.loading), System.currentTimeMillis()));
     }
 
     @Override
