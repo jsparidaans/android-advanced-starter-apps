@@ -23,6 +23,7 @@ import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +33,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -44,7 +49,9 @@ public class MainActivity extends AppCompatActivity {
     // Default quantity is 1.
     private int mInputQuantity = 1;
 
-    // TODO: Get the number format for this locale.
+    // Get the number format for this locale.
+    private NumberFormat mNumberFormat = NumberFormat.getInstance();
+    private static final String TAG = "MainActivity";
 
     // Fixed price in U.S. dollars and cents: ten cents.
     private double mPrice = 0.10;
@@ -53,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
     double mFrExchangeRate = 0.93; // 0.93 euros = $1.
     double mIwExchangeRate = 3.61; // 3.61 new shekels = $1.
 
-    // TODO: Get locale's currency.
+    // Get locale's currency.
+    private NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
 
     /**
      * Creates the view with a toolbar for the options menu
@@ -83,11 +91,29 @@ public class MainActivity extends AppCompatActivity {
         // Set the expiration date as the date to display.
         myDate.setTime(expirationDate);
 
-        // TODO: Format the date for the locale.
+        // Format the date for the locale.
+        final String formattedDate = DateFormat.getDateInstance().format(myDate);
+        TextView expirationDateView = findViewById(R.id.date);
+        expirationDateView.setText(formattedDate);
 
         // TODO: Apply the exchange rate and calculate the price.
+        String formattedPrice;
+        String deviceLocale = Locale.getDefault().getCountry();
+        if (deviceLocale.equals("FR") || deviceLocale.equals("IL")) {
+            if (deviceLocale.equals("FR")) {
+                mPrice *= mFrExchangeRate;
+            } else {
+                mPrice *= mIwExchangeRate;
+            }
+            formattedPrice = currencyFormat.format(mPrice);
+        } else {
+            currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
+            formattedPrice = currencyFormat.format(mPrice);
+        }
 
-        // TODO: Show the price string.
+        // Show the price string.
+        TextView localePrice = findViewById(R.id.price);
+        localePrice.setText(formattedPrice);
 
         // Get the EditText view for the entered quantity.
         final EditText enteredQuantity = (EditText) findViewById(R.id.quantity);
@@ -106,10 +132,18 @@ public class MainActivity extends AppCompatActivity {
                         // Don't format, leave alone.
                     } else {
 
-                        // TODO: Parse string in view v to a number.
+                        // Parse string in view v to a number.
+                        try {
+                            mInputQuantity = mNumberFormat.parse(v.getText().toString()).intValue();
+                            v.setError(null);
+                        } catch (ParseException parseException) {
+                            Log.e(TAG, "onEditorAction: ", parseException);
+                            v.setError(getText(R.string.enter_number));
+                        }
 
-                        // TODO: Convert to string using locale's number format.
-
+                        // Convert to string using locale's number format and show it.
+                        String formattedQuantity = mNumberFormat.format(mInputQuantity);
+                        v.setText(formattedQuantity);
                         // TODO: Homework: Calculate the total amount from price and quantity.
 
                         // TODO: Homework: Use currency format for France (FR) or Israel (IL).
@@ -146,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Creates the options menu and returns true.
      *
-     * @param menu       Options menu
+     * @param menu Options menu
      * @return boolean   True after creating options menu.
      */
     @Override
@@ -159,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Handles options menu item clicks.
      *
-     * @param item      Menu item
+     * @param item Menu item
      * @return boolean  True if menu item is selected.
      */
     @Override
