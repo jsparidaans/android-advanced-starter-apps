@@ -31,6 +31,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends AppCompatActivity implements FetchAddressTask.OnTaskCompleted {
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements FetchAddressTask.
     private AnimatorSet rotateAnim;
     private boolean isTrackingLocation;
     private Button locationButton;
+    private LocationCallback locationCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +74,13 @@ public class MainActivity extends AppCompatActivity implements FetchAddressTask.
                 startTrackingLocation();
             }
         });
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+
+            }
+        };
     }
 
     @Override
@@ -102,6 +113,14 @@ public class MainActivity extends AppCompatActivity implements FetchAddressTask.
             locationTextView.setText(R.string.textview_hint);
             rotateAnim.end();
         }
+    }
+
+    private LocationRequest getLocationRequest() {
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        return locationRequest;
     }
 
     @Override
