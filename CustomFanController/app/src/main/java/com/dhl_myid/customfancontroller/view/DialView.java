@@ -19,6 +19,7 @@ public class DialView extends View {
 
     //Total selection options
     private static int SELECTION_COUNT = 4;
+    private int mSelectionCount;
 
     //Custom view dimensions
     private float mWidth;
@@ -79,6 +80,9 @@ public class DialView extends View {
                     0,
                     0);
 
+            //Set number of selections
+            mSelectionCount = typedArray.getInt(R.styleable.DialView_selectionIndicators, mSelectionCount);
+
             //Set the colors
             mFanOnColor = typedArray.getColor(R.styleable.DialView_fanOnColor, mFanOnColor);
             mFanOffColor = typedArray.getColor(R.styleable.DialView_fanOffColor, mFanOffColor);
@@ -89,7 +93,7 @@ public class DialView extends View {
         //Set up onclick listener
         setOnClickListener(v -> {
             //Rotate to the next choice
-            mActiveSelection = (mActiveSelection + 1) % SELECTION_COUNT;
+            mActiveSelection = (mActiveSelection + 1) % mSelectionCount;
 
             //Set dial background to green if selection not 0
             if (mActiveSelection >= 1) {
@@ -101,14 +105,25 @@ public class DialView extends View {
         });
     }
 
-    private float[] computeXYForPosition(final int position, final float radius) {
+    private float[] computeXYForPosition(final int position, final float radius, boolean isLabel) {
         float[] result = mTempResult;
-
-        //Calculate angle in radians
-        double startAngle = Math.PI * (9 / 8d);
-        double angle = startAngle + (position * (Math.PI / 4));
-        result[0] = (float) (radius * Math.cos(angle)) + (mWidth / 2);
-        result[1] = (float) (radius * Math.sin(angle)) + (mHeight / 2);
+        double startAngle;
+        double angle;
+        if (mSelectionCount > 4) {
+            //Calculate angle in radians
+            startAngle = Math.PI * (9 / 8d);
+            angle = startAngle + (position * (Math.PI / mSelectionCount));
+            result[0] = (float) (radius * Math.cos(angle * 2)) + (mWidth / 2);
+            result[1] = (float) (radius * Math.sin(angle * 2)) + (mHeight / 2);
+            if ((angle > Math.toRadians(360)) && isLabel) {
+                result[1] += 20;
+            }
+        } else {
+            startAngle = Math.PI * (9 / 8d);
+            angle = startAngle + (position * (Math.PI / mSelectionCount));
+            result[0] = (float) (radius * Math.cos(angle)) + (mWidth / 2);
+            result[1] = (float) (radius * Math.sin(angle)) + (mHeight / 2);
+        }
         return result;
     }
 
@@ -122,8 +137,8 @@ public class DialView extends View {
         //Draw text labels
         final float labelRadius = mRadius + 20;
         StringBuffer label = mTempLabel;
-        for (int i = 0; i < SELECTION_COUNT; i++) {
-            float[] xyData = computeXYForPosition(i, labelRadius);
+        for (int i = 0; i < mSelectionCount; i++) {
+            float[] xyData = computeXYForPosition(i, labelRadius, true);
             float x = xyData[0];
             float y = xyData[1];
             label.setLength(0);
@@ -133,11 +148,18 @@ public class DialView extends View {
 
         //Draw indicator
         final float markerRadius = mRadius - 35;
-        float[] xyData = computeXYForPosition(mActiveSelection, markerRadius);
+        float[] xyData = computeXYForPosition(mActiveSelection, markerRadius, false);
 
         float x = xyData[0];
         float y = xyData[1];
         canvas.drawCircle(x, y, 20, mTextPaint);
+    }
+
+    public void setSelectionCount(int mSelectionCount) {
+        this.mSelectionCount = mSelectionCount;
+        this.mActiveSelection = 0;
+        mDialPaint.setColor(mFanOffColor);
+        invalidate();
     }
 
     @Override
