@@ -29,6 +29,8 @@
         android:layout_marginTop="@dimen/dial_margins"
         android:layout_marginEnd="@dimen/dial_margins"
         android:contentDescription="@string/description_fan_control"
+        app:fanOffColor="@color/gray1"
+        app:fanOnColor="@color/yellow1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/customViewLabel" />
