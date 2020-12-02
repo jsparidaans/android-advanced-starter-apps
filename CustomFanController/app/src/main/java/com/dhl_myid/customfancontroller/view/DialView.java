@@ -9,6 +9,9 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import static android.graphics.Color.GRAY;
+import static android.graphics.Color.GREEN;
+
 public class DialView extends View {
 
     //Total selection options
@@ -56,6 +59,18 @@ public class DialView extends View {
         mActiveSelection = 0;
 
         //Set up onclick listener
+        setOnClickListener(v -> {
+            //Rotate to the next choice
+            mActiveSelection = (mActiveSelection + 1) % SELECTION_COUNT;
+
+            //Set dial background to green if selection not 0
+            if (mActiveSelection >= 1) {
+                mDialPaint.setColor(GREEN);
+            } else {
+                mDialPaint.setColor(GRAY);
+            }
+            invalidate();
+        });
     }
 
     private float[] computeXYForPosition(final int position, final float radius) {
