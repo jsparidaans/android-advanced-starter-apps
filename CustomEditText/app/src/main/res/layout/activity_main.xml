@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <EditText
+    <com.dhl_myid.customedittext.view.EditTextWithClear
         android:id="@+id/custom_edit_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
