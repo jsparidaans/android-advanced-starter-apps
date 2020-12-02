@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="dial_dimensions">200dp</dimen>
+    <dimen name="dial_margins">8dp</dimen>
+</resources>
