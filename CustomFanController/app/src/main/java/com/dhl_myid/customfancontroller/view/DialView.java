@@ -1,6 +1,7 @@
 package com.dhl_myid.customfancontroller.view;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
@@ -57,7 +58,44 @@ public class DialView extends View {
         //Set up onclick listener
     }
 
+    private float[] computeXYForPosition(final int position, final float radius) {
+        float[] result = mTempResult;
 
+        //Calculate angle in radians
+        double startAngle = Math.PI * (9 / 8d);
+        double angle = startAngle + (position * (Math.PI / 4));
+        result[0] = (float) (radius * Math.cos(angle)) + (mWidth / 2);
+        result[1] = (float) (radius * Math.sin(angle)) + (mHeight / 2);
+        return result;
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        //Draw dial
+        canvas.drawCircle(mWidth / 2, mHeight / 2, mRadius, mDialPaint);
+
+        //Draw text labels
+        final float labelRadius = mRadius + 20;
+        StringBuffer label = mTempLabel;
+        for (int i = 0; i < SELECTION_COUNT; i++) {
+            float[] xyData = computeXYForPosition(i, labelRadius);
+            float x = xyData[0];
+            float y = xyData[1];
+            label.setLength(0);
+            label.append(i);
+            canvas.drawText(label, 0, label.length(), x, y, mTextPaint);
+        }
+
+        //Draw indicator
+        final float markerRadius = mRadius - 35;
+        float[] xyData = computeXYForPosition(mActiveSelection, markerRadius);
+
+        float x = xyData[0];
+        float y = xyData[1];
+        canvas.drawCircle(x, y, 20, mTextPaint);
+    }
 
     @Override
     protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {

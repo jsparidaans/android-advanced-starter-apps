@@ -21,14 +21,13 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
+    <com.dhl_myid.customfancontroller.view.DialView
         android:id="@+id/dialView"
         android:layout_width="@dimen/dial_dimensions"
         android:layout_height="@dimen/dial_dimensions"
         android:layout_marginStart="@dimen/dial_margins"
         android:layout_marginTop="@dimen/dial_margins"
         android:layout_marginEnd="@dimen/dial_margins"
-        android:background="@android:color/darker_gray"
         android:contentDescription="@string/description_fan_control"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
