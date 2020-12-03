@@ -48,8 +48,11 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private void setUpBitmap() {
+        //Set bitmap position to random positions
         bitmapX = (int) Math.floor(Math.random() * (viewWidth - bitmap.getWidth()));
         bitmapY = (int) Math.floor(Math.random() * (viewHeight - bitmap.getHeight()));
+
+        //Bounding box
         winnerRect = new RectF(bitmapX, bitmapY,
                 bitmapX + bitmap.getWidth(),
                 bitmapY + bitmap.getHeight());
