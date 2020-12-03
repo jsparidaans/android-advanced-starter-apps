@@ -22,7 +22,8 @@ public class GameView extends SurfaceView implements Runnable {
     private RectF winnerRect;
     private double viewWidth;
     private double viewHeight;
-
+    private boolean isRunning = false;
+    private Thread gameThread = new Thread();
 
     public GameView(Context context) {
         super(context);
@@ -59,11 +60,18 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     public void pause() {
-        //stub
+        isRunning = false;
+        try {
+            gameThread.join();
+        } catch (InterruptedException printStackTrace) {
+            printStackTrace.printStackTrace();
+        }
     }
 
     public void resume() {
-        //stub
+        isRunning = true;
+        gameThread = new Thread(this);
+        gameThread.start();
     }
 
     @Override
