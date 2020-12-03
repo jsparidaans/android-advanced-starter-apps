@@ -9,9 +9,9 @@ public class FlashLightCone {
         radius = ((viewWidth <= viewHeight) ? x / 3 : y / 3);
     }
 
-    public void update(int newX, int newY){
-        x=newX;
-        y=newY;
+    public void update(int newX, int newY) {
+        x = newX;
+        y = newY;
     }
 
     public int getX() {
