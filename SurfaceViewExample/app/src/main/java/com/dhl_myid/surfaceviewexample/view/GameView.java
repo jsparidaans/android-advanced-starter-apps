@@ -1,5 +1,6 @@
 package com.dhl_myid.surfaceviewexample.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -116,6 +118,33 @@ public class GameView extends SurfaceView implements Runnable {
                 surfaceHolder.unlockCanvasAndPost(canvas);
             }
         }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        float x = event.getX();
+        float y = event.getY();
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                setUpBitmap();
+                updateFrame((int) x, (int) y);
+                invalidate();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                updateFrame((int) x, (int) y);
+                invalidate();
+                break;
+            default:
+                //Nothing
+        }
+
+        return true;
+    }
+
+    private void updateFrame(int newX, int newY) {
+        flashLightCone.update(newX, newY);
     }
 
     @Override
