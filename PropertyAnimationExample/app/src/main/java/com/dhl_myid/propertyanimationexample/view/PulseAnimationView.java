@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
@@ -46,6 +47,12 @@ public class PulseAnimationView extends View {
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
             x = event.getX();
             y = event.getY();
+            if (pulseAnimatorSet != null && pulseAnimatorSet.isRunning()) {
+                pulseAnimatorSet.cancel();
+            }
+            if (pulseAnimatorSet != null) {
+                pulseAnimatorSet.start();
+            }
         }
 
         return super.onTouchEvent(event);
@@ -73,5 +80,9 @@ public class PulseAnimationView extends View {
         pulseAnimatorSet.play(repeatAnimator).after(shrinkAnimator);
     }
 
-
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        canvas.drawCircle(x, y, radius, paint);
+    }
 }
