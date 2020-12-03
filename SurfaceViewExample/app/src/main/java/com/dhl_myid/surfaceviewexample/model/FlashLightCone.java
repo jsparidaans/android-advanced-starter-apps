@@ -1,4 +1,4 @@
-package com.dhl_myid.surfaceviewexample.view;
+package com.dhl_myid.surfaceviewexample.model;
 
 public class FlashLightCone {
     private int x, y, radius;
