@@ -18,16 +18,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        videoView=findViewById(R.id.video_view);
+        videoView = findViewById(R.id.video_view);
     }
 
-    private void initializePlayer(){
+    private void initializePlayer() {
         Uri videoUri = getMedia(VIDEO_SAMPLE);
         videoView.setVideoURI(videoUri);
         videoView.start();
     }
 
-    private void releasePlayer(){
+    private void releasePlayer() {
         videoView.stopPlayback();
     }
 
