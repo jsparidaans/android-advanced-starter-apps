@@ -31,6 +31,27 @@ public class MainActivity extends AppCompatActivity {
         videoView.stopPlayback();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        initializePlayer();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        releasePlayer();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        videoView.pause();
+    }
+
     private Uri getMedia(String mediaName) {
         return Uri.parse("android.resource://" + getPackageName() + "/raw/" + mediaName);
     }
